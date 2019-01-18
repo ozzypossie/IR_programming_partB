@@ -1,3 +1,5 @@
+from itertools import permutations
+
 ##############################################
 ### OFFLINE EVALUATION
 ##############################################
@@ -24,11 +26,16 @@ def compute_click_probability(rel):
 
 def create_ranking_pairs():
     """
-    TODO
+    TODO: maybe we want to exclude some pairs?
     Outputs a list of tuples with all possible ranking pairs from a pool of 12 document ids.
     """
-
-    return [([],[])]
+    list_of_pairs = []
+    perm = list(permutations(range(12),3))
+    for i in perm:
+        for j in perm:
+            pair = (list(i),list(j))
+            list_of_pairs.append(pair)
+    return list_of_pairs
 
 def get_relevance(doc):
     """
@@ -58,14 +65,14 @@ def divide_pairs_over_bins(list_pairs):
                 dERRs[int(bin[0])].append(i)
     return dERRs
 
-pairs = [] #list of all distinct ranking pairs
-deltaERRs = [] #list of all pairs divided over the 10 bins
+pairs = create_ranking_pairs() #list of all distinct ranking pairs
+deltaERRs = divide_pairs_over_bins(pairs) #list of all pairs (tuples of two lists) divided over the 10 bins
 
-# For testing purposes:
-lst = [7, 8, 9]
-print(compute_ERR(lst))
+## For testing purposes:
+#lst = [7, 8, 9]
+#print(compute_ERR(lst))
 
-print(divide_pairs_over_bins([([3,5,7],[1,2,3]),([6,8,11],[3,2,0])]))
+#print(divide_pairs_over_bins([([3,5,7],[1,2,3]),([6,8,11],[3,2,0]),([3,5,8],[1,2,3])]))
 
 ##############################################
 ### ONLINE EVALUATION
@@ -90,7 +97,7 @@ def pr_interleave():
 def em():
     """
     TODO
-    Expectation-maximization method for determining the parameters alpha and gamma.
+    Expectation-maximization method for determining the parameters alpha and gamma, using training data.
     """
     return (alpha,gamma)
 
@@ -117,7 +124,7 @@ def decide_winner(list):
     produce_clicks(list)
     return []
 
-yandex_log # Variable containing the click log we use for determining the parameters alpha and gamma
+yandex_log = 0 # Variable containing the click log we use for determining the parameters alpha and gamma
 
 ## Simulation of Interleaving Experiment
 
