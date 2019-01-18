@@ -99,6 +99,8 @@ def em():
     TODO
     Expectation-maximization method for determining the parameters alpha and gamma, using training data.
     """
+    # Use this: https://github.com/markovi/PyClick/blob/master/pyclick/utils/YandexRelPredChallengeParser.py to understand what is going on
+    # https://www.kaggle.com/c/yandex-personalized-web-search-challenge#logs-format
     return (alpha,gamma)
 
 def click_probabilities():
@@ -115,6 +117,12 @@ def produce_clicks(list):
     """
     probabilities = click_probabilities(list)
     return []
+
+def produce_clicks_random(list):
+    """
+    TODO
+    Outputs a list of clicks using a Random Click Model.
+    """
 
 def decide_winner(list):
     """
@@ -141,11 +149,15 @@ def estimate_win_proportion(ranking_pair):
         print("Please implement me first!")
     return compute_sample_size(proportion)
 
-def compute_sample_size(proportion):
+def compute_sample_size(p1):
     """
     TODO
     Computes the sample size with as input a proportion.
     """
+    alpha = 0.05
+    beta = 0.1
+    p0 = 0.5
+    delta = abs(p1-p0)
     return 0
 
 def run_interleaving_experiment(ranking_pairs):
