@@ -1,15 +1,17 @@
+##############################################
 ### OFFLINE EVALUATION
+##############################################
 
 def compute_ERR(list):
     """
-    Outputs the ERR measure of the rankinglist ([rel1, rel2, rel3]).
+    Outputs the ERR measure of the rankinglist ([doc_id1, doc_id2, doc_id3]).
     """
     ERR = 0
     for r in range(len(list)):
-        theta_r = compute_click_probability(list[r])
+        theta_r = compute_click_probability(get_relevance(list[r]))
         prod = 1
         for i in range(r):
-            prod *= (1-compute_click_probability(list[i]))
+            prod *= (1-compute_click_probability(get_relevance(list[i])))
         ERR += prod*theta_r*1/(r+1)
     return ERR
 
@@ -32,7 +34,7 @@ def get_relevance(doc):
     """
     Outputs the relevance of the document, given as integer.
     """
-    if (doc<0 or doc>12):
+    if (doc<0 or doc>11):
         raise Exception('Document id should be from 0 to 12!')
 
     if doc<6:
@@ -42,7 +44,7 @@ def get_relevance(doc):
 
 def divide_pairs_over_bins(list_pairs):
     """
-    Dividines a list of pairs over 10 bins according to the delta ERR.
+    Divides a list of pairs over 10 bins according to the delta ERR.
     """
     dERRs = [[] for i in range(10)]
     for i in list_pairs:
@@ -57,10 +59,93 @@ def divide_pairs_over_bins(list_pairs):
     return dERRs
 
 pairs = [] #list of all distinct ranking pairs
-deltaERRs = []
-lst = [1, 1, 1]
+deltaERRs = [] #list of all pairs divided over the 10 bins
+
+# For testing purposes:
+lst = [7, 8, 9]
 print(compute_ERR(lst))
 
-print(divide_pairs_over_bins([([1,1,0],[0,0,1]),([1,0,1],[0,0,0])]))
+print(divide_pairs_over_bins([([3,5,7],[1,2,3]),([6,8,11],[3,2,0])]))
 
+##############################################
 ### ONLINE EVALUATION
+##############################################
+
+## Interleaving
+def td_interleave():
+    """
+    TODO
+    Returns an interleaved list using Team-Draft Interleaving.
+    """
+    return []
+
+def pr_interleave():
+    """
+    TODO
+    Returns an interleaved list using Probabilistic Interleaving.
+    """
+    return []
+
+## Simulating user clicks
+def em():
+    """
+    TODO
+    Expectation-maximization method for determining the parameters alpha and gamma.
+    """
+    return (alpha,gamma)
+
+def click_probabilities():
+    """
+    TODO
+    Returns a list of click-probabilities for each document in a ranking list.
+    """
+    return []
+
+def produce_clicks(list):
+    """
+    TODO
+    Outputs a list of clicks for a list (1 is click, 0 is no click).
+    """
+    probabilities = click_probabilities(list)
+    return []
+
+def decide_winner(list):
+    """
+    TODO
+    Takes as input a pair of ranking lists. E.g. of the form [(doc_id1,"E"),(doc_id2,"P"),(doc_id3,"E")].
+    """
+    produce_clicks(list)
+    return []
+
+yandex_log # Variable containing the click log we use for determining the parameters alpha and gamma
+
+## Simulation of Interleaving Experiment
+
+def estimate_win_proportion(ranking_pair):
+    """
+    TODO
+    Runs interleaving experiment k times for each pair in ranking_pairs.
+    """
+    k = 500
+    proportion = 0
+    for i in range(k):
+        # interleave
+        # click simulation
+        print("Please implement me first!")
+    return compute_sample_size(proportion)
+
+def compute_sample_size(proportion):
+    """
+    TODO
+    Computes the sample size with as input a proportion.
+    """
+    return 0
+
+def run_interleaving_experiment(ranking_pairs):
+    """
+    TODO
+    Runs the interleaving experiment for each ranking pair in ranking_pairs.
+    This function puts the estimated samples sizes in the right binself.
+    Returns a list for each bin a tuple (min,median,max).
+    """
+    return []
