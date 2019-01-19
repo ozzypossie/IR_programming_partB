@@ -4,6 +4,7 @@ from copy import deepcopy
 import numpy as np
 from scipy.stats import norm
 import math
+import statistics
 
 ##############################################
 ### OFFLINE EVALUATION
