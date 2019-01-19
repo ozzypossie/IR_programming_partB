@@ -1,4 +1,6 @@
 from itertools import permutations
+import random
+from copy import deepcopy
 
 ##############################################
 ### OFFLINE EVALUATION
@@ -197,19 +199,17 @@ def em():
 def click_probabilities(l, alpha, gamma):
     return [abs(alpha - (1 - l[i]))*gamma[i] for i in range(3)]
 
-def produce_clicks(list):
-    """
-    TODO
-    Outputs a list of clicks for a list (1 is click, 0 is no click).
-    """
-    probabilities = click_probabilities(list)
-    return []
+# Takes a list of relevance scores and parameters, and returns for each position whether it is clicked or not
+# 1 means a click.
+def produce_clicks(list, alpha, gamma):
+    probabilities = click_probabilities(list, alpha, gamma)    
+    return [np.random.binomial(1, probabilities[i]) for i in range(3)]
 
-def produce_clicks_random(list):
-    """
-    TODO
-    Outputs a list of clicks using a Random Click Model.
-    """
+
+# Based on a click-probability theta, clicks are completely random here.
+def produce_clicks_random(list, theta):
+    return [np.random.binomial(1, theta) for i in range(3)]
+
 
 def decide_winner(list):
     """
