@@ -267,11 +267,20 @@ def compute_sample_size(p1):
     N = N_intermediate + 1/delta
     return N
 
-def run_interleaving_experiment(ranking_pairs):
-    """
-    TODO
-    Runs the interleaving experiment for each ranking pair in ranking_pairs.
-    This function puts the estimated samples sizes in the right binself.
-    Returns a list for each bin a tuple (min,median,max).
-    """
-    return []
+def run_interleaving_experiment(deltaERRs, interleaver, click_function, alpha, gamma, theta):
+    result = []
+    counter = 0
+    for i in range(len(deltaERRs)):
+        if (len(deltaERRs[i])> 0):
+            Ns = []
+            for pair in deltaERRs[i]:
+                p1 = estimate_win_proportion(pair, interleaver, click_function, alpha, gamma, theta)
+                counter += 1
+                print(counter)
+                if (p1 != 0.5):
+                    Ns += [compute_sample_size(p1)]
+            minimum = min(Ns)
+            maximum = max(Ns)
+            median = statistics.median(Ns)
+            result += [(minimum, median, maximum)]
+    return result
