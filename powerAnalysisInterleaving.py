@@ -65,8 +65,9 @@ def divide_pairs_over_bins(list_pairs):
                 dERRs[int(bin[0])].append(i)
     return dERRs
 
-pairs = create_ranking_pairs() #list of all distinct ranking pairs
-deltaERRs = divide_pairs_over_bins(pairs) #list of all pairs (tuples of two lists) divided over the 10 bins
+# TODO: Uncomment lines
+# pairs = create_ranking_pairs() #list of all distinct ranking pairs
+# deltaERRs = divide_pairs_over_bins(pairs) #list of all pairs (tuples of two lists) divided over the 10 bins
 
 ## For testing purposes:
 #lst = [7, 8, 9]
@@ -94,14 +95,65 @@ def pr_interleave():
     return []
 
 ## Simulating user clicks
+def yandex_log_parser():
+    """
+    This function parses the Yandex Click Log File and yields which ranks are clicked in a session.
+    """
+    sessionID = 0
+    links = [-1 for i in range(10)] #dummy list
+    clicks = [0 for i in range(10)]
+    list_clicks = []
+    with open("YandexRelPredChallenge.txt") as f:
+        for line in f:
+            words = line.split()
+            sessionID_old = sessionID
+            sessionID = int(words[0])
+            if sessionID>sessionID_old:
+                list_clicks.append(clicks)
+                clicks = [0 for i in range(10)]
+            recordType = words[2]
+            if recordType=="Q":
+                links = [int(l) for l in words[5:]]
+            elif recordType=="C":
+                link_clicked = int(words[3])
+                if link_clicked in links:
+                    rank_clicked = links.index(link_clicked)
+                    clicks[rank_clicked] =1
+    return(list_clicks)
+
 def em():
     """
-    TODO
+    TODO: check whether it is correct
     Expectation-maximization method for determining the parameters alpha and gamma, using training data.
+    Using the update rules from: https://clickmodels.weebly.com/uploads/5/2/2/5/52257029/mc2015-clickmodels.pdf
     """
     # Use this: https://github.com/markovi/PyClick/blob/master/pyclick/utils/YandexRelPredChallengeParser.py to understand what is going on
     # https://www.kaggle.com/c/yandex-personalized-web-search-challenge#logs-format
+    gamma = [0.5 for x in range(10)] #book
+    alpha = 0.2 #book, initial probability clicked if not relevant
+    tolerance = 0.01
+    max_iter = 100
+    click_log = yandex_log_parser()
+    for i in range(max_iter):
+        total = [1 for x in range(10)]
+        for j in click_log:
+            for rank in range(len(j)):
+                gamma_value = gamma[rank]/total[rank]
+                alpha_value = alpha/sum(total)
+                if j[rank]==1:
+                    gamma[rank] += 1
+                    alpha += 1
+                else:
+                    alpha += (1-gamma_value)*alpha_value/(1-gamma_value*alpha_value)
+                    gamma[rank] += (1-alpha_value)*gamma_value/(1-gamma_value*alpha_value)
+                total[rank] += 1
+        # New alpha and gamma
+        alpha = alpha/sum(total)
+        for x in range(len(gamma)):
+            gamma[x] = gamma[x]/total[x]
     return (alpha,gamma)
+
+(alpha,gamma) = em()
 
 def click_probabilities():
     """
@@ -131,8 +183,6 @@ def decide_winner(list):
     """
     produce_clicks(list)
     return []
-
-yandex_log = 0 # Variable containing the click log we use for determining the parameters alpha and gamma
 
 ## Simulation of Interleaving Experiment
 
