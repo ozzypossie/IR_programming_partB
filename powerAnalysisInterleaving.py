@@ -80,19 +80,56 @@ def divide_pairs_over_bins(list_pairs):
 ##############################################
 
 ## Interleaving
-def td_interleave():
-    """
-    TODO
-    Returns an interleaved list using Team-Draft Interleaving.
-    """
-    return []
 
-def pr_interleave():
-    """
-    TODO
-    Returns an interleaved list using Probabilistic Interleaving.
-    """
-    return []
+def coin_to_ranker(cointoss):
+    if (cointoss == 0):
+        return "E"
+    if (cointoss == 1):
+        return "P"
+    else:
+        raise Exception('This number should be either 0 or 1!')
+
+def td_interleave(pair):
+    # Writing the pair as a list makes it mutable, which makes the rest easier to code.
+    # If we do not want the original pair to be changed, we need to do a deepcopy
+    new_pair = deepcopy(list([pair[0], pair[1]]))
+    result = []
+    for i in range(3):
+        cointoss = random.randint(0, 1)
+        result += [(new_pair[cointoss][0], coin_to_ranker(cointoss))]
+        if (new_pair[cointoss][0] in new_pair[1 - cointoss]):
+            new_pair[1 - cointoss].remove(new_pair[cointoss][0])
+        new_pair[cointoss] = new_pair[cointoss][1:]
+    return result
+
+# The softmax takes the rank of a document as well as the maximal rank and returns
+# the probability of choosing that document
+def softmax(r, max_r):
+    tau = 3
+    ranks = range(1,max_r+1)
+    normalizer = sum([rank**(-tau) for rank in ranks])
+    return r**(-tau)/normalizer
+
+def pr_interleave(pair):
+    # Writing the pair as a list makes it mutable, which makes the rest easier to code.
+    # If we do not want the original pair to be changed, we need to do a deepcopy
+    new_pair = deepcopy(list([pair[0], pair[1]]))
+    result = []
+    sm = [[],[]]
+    sm[0] = [softmax(r, 3) for r in range(1, 4)]
+    sm[1] = [softmax(r, 3) for r in range(1, 4)]
+    population = [[0, 1, 2], [0, 1, 2]]
+    for i in range(3):
+        cointoss = random.randint(0, 1)
+        index = random.choices(population[cointoss], sm[cointoss])[0]
+        sm[cointoss][index] = 0
+        result += [(new_pair[cointoss][index], coin_to_ranker(cointoss))]
+        for j in range(3):
+            if (new_pair[cointoss][index] == new_pair[1 - cointoss][j]):
+                sm[1 - cointoss][j] = 0       
+    return result
+
+
 
 ## Simulating user clicks
 def yandex_log_parser():
