@@ -192,12 +192,10 @@ def em():
 
 (alpha,gamma) = em()
 
-def click_probabilities():
-    """
-    TODO
-    Returns a list of click-probabilities for each document in a ranking list.
-    """
-    return []
+# It takes a ranked list l of relevance scores, and parameters alpha and gamma
+# and outputs the probabilities that different elements are clicked in the end
+def click_probabilities(l, alpha, gamma):
+    return [abs(alpha - (1 - l[i]))*gamma[i] for i in range(3)]
 
 def produce_clicks(list):
     """
