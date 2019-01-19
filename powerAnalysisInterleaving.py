@@ -1,6 +1,9 @@
 from itertools import permutations
 import random
 from copy import deepcopy
+import numpy as np
+from scipy.stats import norm
+import math
 
 ##############################################
 ### OFFLINE EVALUATION
@@ -211,39 +214,58 @@ def produce_clicks_random(list, theta):
     return [np.random.binomial(1, theta) for i in range(3)]
 
 
-def decide_winner(list):
-    """
-    TODO
-    Takes as input a pair of ranking lists. E.g. of the form [(doc_id1,"E"),(doc_id2,"P"),(doc_id3,"E")].
-    """
-    produce_clicks(list)
-    return []
+# Takes an interleaved list and a click pattern and returns the winner
+def decide_winner(interl, clicks):
+    clicks_E = 0
+    clicks_P = 0
+    for i in range(3):
+        if (clicks[i] == 1):
+            if (interl[i][1] == "E"):
+                clicks_E += 1
+            elif (interl[i][1] == "P"):
+                clicks_P += 1
+    if (clicks_E > clicks_P):
+        return "E"
+    elif (clicks_E < clicks_P):
+        return "P"
+    else:
+        return "NW"
 
 ## Simulation of Interleaving Experiment
 
-def estimate_win_proportion(ranking_pair):
-    """
-    TODO
-    Runs interleaving experiment k times for each pair in ranking_pairs.
-    """
+# This determines the win_proportion of a single pair, while we do the interleaving and click-experiment
+# 500 times. (500 can be changed later)
+# The second argument is the interleaving__method used (probabilistic or team_draft)
+# The third argument specifies the function that determines the click_probabilities (position based or random)
+def estimate_win_proportion(ranking_pair, interleaver, click_function, alpha, gamma, theta):
     k = 500
-    proportion = 0
+    wins_E = 0
+    wins_P = 0
     for i in range(k):
-        # interleave
-        # click simulation
-        print("Please implement me first!")
-    return compute_sample_size(proportion)
+        interl = interleaver(ranking_pair)
+        relevance_list = get_relevance_list([elem[0] for elem in interl])
+        if (click_function == produce_clicks):
+            clicks = click_function(relevance_list, alpha, gamma)
+        elif (click_function == produce_clicks_random):
+            clicks = click_function(relevance_list, theta)
+        winner = decide_winner(interl, clicks)
+        if (winner == "E"):
+            wins_E += 1
+        elif (winner == "P"):
+            wins_P += 1
+            
+    return wins_E / (wins_E + wins_P)
 
 def compute_sample_size(p1):
-    """
-    TODO
-    Computes the sample size with as input a proportion.
-    """
-    alpha = 0.05
-    beta = 0.1
+    a = 0.05
+    b = 0.1
     p0 = 0.5
     delta = abs(p1-p0)
-    return 0
+    N_intermediate = ((norm.ppf(1 - a)*math.sqrt(p0*(1-p0)) + 
+                      norm.ppf(1 - b)*math.sqrt(p1*(1 - p1)))
+                      /delta)**2
+    N = N_intermediate + 1/delta
+    return N
 
 def run_interleaving_experiment(ranking_pairs):
     """
