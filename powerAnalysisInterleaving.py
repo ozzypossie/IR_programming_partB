@@ -55,7 +55,7 @@ def divide_pairs_over_bins(list_pairs):
     """
     dERRs = [[] for i in range(10)]
     for i in list_pairs:
-        deltaERR = compute_ERR(i[0]) - compute_ERR([1])
+        deltaERR = compute_ERR(i[0]) - compute_ERR(i[1])
         #Keep all the positive delta ERRs and put them in the respective bin
         if deltaERR > 0:
             if deltaERR < 0.1:
