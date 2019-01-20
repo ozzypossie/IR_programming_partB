@@ -132,7 +132,7 @@ def pr_interleave(pair):
         result += [(new_pair[cointoss][index], coin_to_ranker(cointoss))]
         for j in range(3):
             if (new_pair[cointoss][index] == new_pair[1 - cointoss][j]):
-                sm[1 - cointoss][j] = 0       
+                sm[1 - cointoss][j] = 0
     return result
 
 
@@ -174,8 +174,9 @@ def em():
     # https://www.kaggle.com/c/yandex-personalized-web-search-challenge#logs-format
     gamma = [0.5 for x in range(10)] #book
     alpha = 0.2 #book, initial probability clicked if not relevant
+    epsilon = 0.05
     tolerance = 0.01
-    max_iter = 100
+    max_iter = 5
     click_log = yandex_log_parser()
     for i in range(max_iter):
         total = [1 for x in range(10)]
@@ -194,7 +195,7 @@ def em():
         alpha = alpha/sum(total)
         for x in range(len(gamma)):
             gamma[x] = gamma[x]/total[x]
-    return (alpha,gamma)
+    return (1-epsilon,gamma)
 
 (alpha,gamma) = em()
 
@@ -206,7 +207,7 @@ def click_probabilities(l, alpha, gamma):
 # Takes a list of relevance scores and parameters, and returns for each position whether it is clicked or not
 # 1 means a click.
 def produce_clicks(list, alpha, gamma):
-    probabilities = click_probabilities(list, alpha, gamma)    
+    probabilities = click_probabilities(list, alpha, gamma)
     return [np.random.binomial(1, probabilities[i]) for i in range(3)]
 
 
@@ -254,7 +255,7 @@ def estimate_win_proportion(ranking_pair, interleaver, click_function, alpha, ga
             wins_E += 1
         elif (winner == "P"):
             wins_P += 1
-            
+
     return wins_E / (wins_E + wins_P)
 
 def compute_sample_size(p1):
@@ -262,7 +263,7 @@ def compute_sample_size(p1):
     b = 0.1
     p0 = 0.5
     delta = abs(p1-p0)
-    N_intermediate = ((norm.ppf(1 - a)*math.sqrt(p0*(1-p0)) + 
+    N_intermediate = ((norm.ppf(1 - a)*math.sqrt(p0*(1-p0)) +
                       norm.ppf(1 - b)*math.sqrt(p1*(1 - p1)))
                       /delta)**2
     N = N_intermediate + 1/delta
