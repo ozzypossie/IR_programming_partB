@@ -258,6 +258,9 @@ def estimate_win_proportion(ranking_pair, interleaver, click_function, alpha, ga
 
     return wins_E / (wins_E + wins_P)
 
+
+# Based on the observed number of wins p1 of the new algorithm, this function computes the sample
+# size needed for detecting the difference
 def compute_sample_size(p1):
     a = 0.05
     b = 0.1
@@ -269,6 +272,11 @@ def compute_sample_size(p1):
     N = N_intermediate + 1/delta
     return N
 
+# This function runs the interleaving experiment and fills the table with the min, median and max values.
+# interleaver is td_interleave or pr_interleave.
+# click_function is produce_clicks (for the position based model) or produce_clicks_random (for the random model)
+# alpha, gamma are the parameters for the position based model
+# theta is the parameter for the random model
 def run_interleaving_experiment(deltaERRs, interleaver, click_function, alpha, gamma, theta):
     result = []
     counter = 0
