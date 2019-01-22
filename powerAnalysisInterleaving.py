@@ -176,10 +176,10 @@ def em():
     alpha = 0.2 #book, initial probability clicked if not relevant
     epsilon = 0.05
     tolerance = 0.01
-    max_iter = 5
+    max_iter = 100
     click_log = yandex_log_parser()
     for i in range(max_iter):
-        total = [1 for x in range(10)]
+        total = [2 for x in range(10)]
         for j in click_log:
             for rank in range(len(j)):
                 gamma_value = gamma[rank]/total[rank]
@@ -198,6 +198,7 @@ def em():
     return (1-epsilon,gamma)
 
 (alpha,gamma) = em()
+print(alpha, gamma)
 
 # It takes a ranked list l of relevance scores, and parameters alpha and gamma
 # and outputs the probabilities that different elements are clicked in the end
